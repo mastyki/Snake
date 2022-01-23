@@ -4,6 +4,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Random;
 
 public class GamePanel extends JPanel implements ActionListener {
@@ -43,27 +46,105 @@ public class GamePanel extends JPanel implements ActionListener {
         draw(graphics);
     }
     public void draw (Graphics graphics){
-     //   graphics.setColor(Color.pink);
-        for (int i = 0;i<SCREEN_HEIGHT/UNIT_SIZE;i++){
-            graphics.drawLine(i*UNIT_SIZE, 0, i*UNIT_SIZE,SCREEN_HEIGHT);
-            graphics.drawLine(0, i*UNIT_SIZE, SCREEN_WIDTH,i*UNIT_SIZE);
-        }
-        graphics.setColor(Color.red);
-     //   graphics.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
-        graphics.fillRect(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
+        if (running){
+            for (int i = 0;i<SCREEN_HEIGHT/UNIT_SIZE;i++){
+                graphics.drawLine(i*UNIT_SIZE, 0, i*UNIT_SIZE,SCREEN_HEIGHT);
+                graphics.drawLine(0, i*UNIT_SIZE, SCREEN_WIDTH,i*UNIT_SIZE);
+            }
+            graphics.setColor(Color.red);
+            graphics.fillRect(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
 
-        // draw Snake
-        for (int i = 0; i< bodyParts;i++){
-            if (i == 0){
-                graphics.setColor(Color.decode("#FF1493"));
-                graphics.fillRect(x[i],y[i], UNIT_SIZE, UNIT_SIZE);
+            // draw Snake
+            for (int i = 0; i< bodyParts;i++){
+                if (i == 0){
+                    graphics.setColor(Color.decode("#FF1493"));
+                    graphics.fillRect(x[i],y[i], UNIT_SIZE, UNIT_SIZE);
+                }
+                else {
+                    graphics.setColor(Color.decode("#FF69B4"));
+                    graphics.fillRect(x[i],y[i], UNIT_SIZE, UNIT_SIZE);
+                }
             }
-            else {
-                graphics.setColor(Color.decode("#FF69B4"));
-                graphics.fillRect(x[i],y[i], UNIT_SIZE, UNIT_SIZE);
+
+            // print Score
+            graphics.setColor(Color.red);
+
+            try {
+                //create the font to use
+                Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File("Datcub-eZO2g.ttf")).deriveFont(35f);
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                //register the font
+                ge.registerFont(customFont);
+                graphics.setFont(customFont);
+                FontMetrics metrics = getFontMetrics(customFont);
+                String message = "Score: ";
+                graphics.drawString(message + applesEaten, (SCREEN_WIDTH-metrics.stringWidth(message + applesEaten))/2, customFont.getSize() );
+            } catch (IOException e) {
+                e.printStackTrace();
+                graphics.setFont(new Font("Arial", Font.BOLD, 35));
+                FontMetrics metrics = graphics.getFontMetrics();
+                String message = "Score: ";
+                graphics.drawString(message + applesEaten, (SCREEN_WIDTH-metrics.stringWidth(message + applesEaten))/2,35 );
+            } catch(FontFormatException e) {
+                e.printStackTrace();
             }
         }
+        else {
+            graphics.setColor(Color.red);
+
+            try {
+                //create the font to use
+                Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File("Datcub-eZO2g.ttf")).deriveFont(35f);
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                //register the font
+                ge.registerFont(customFont);
+                graphics.setFont(customFont);
+                FontMetrics metrics = getFontMetrics(customFont);
+                String message = "Score: ";
+                graphics.drawString(message + applesEaten, (SCREEN_WIDTH-metrics.stringWidth(message + applesEaten))/2, customFont.getSize() );
+            } catch (IOException e) {
+                e.printStackTrace();
+                graphics.setFont(new Font("Arial", Font.BOLD, 35));
+                FontMetrics metrics = graphics.getFontMetrics();
+                String message = "Score: ";
+                graphics.drawString(message + applesEaten, (SCREEN_WIDTH-metrics.stringWidth(message + applesEaten))/2,35 );
+                e.printStackTrace();
+            } catch(FontFormatException e) {
+                e.printStackTrace();
+            }
+            try {
+
+                //create the font to use
+                Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File("Datcub-eZO2g.ttf")).deriveFont(75f);
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                //register the font
+                ge.registerFont(customFont);
+                graphics.setFont(customFont);
+                FontMetrics metrics = getFontMetrics(customFont);
+                String message = "Game Over :(";
+                graphics.drawString(message, (SCREEN_WIDTH-metrics.stringWidth(message))/2, (SCREEN_HEIGHT)/2);
+            } catch (IOException e) {
+                e.printStackTrace();
+                e.printStackTrace();
+                graphics.setFont(new Font("Arial", Font.BOLD, 75));
+                FontMetrics metrics = graphics.getFontMetrics();
+                String message = "Game Over :(";
+                graphics.drawString(message, (SCREEN_WIDTH-metrics.stringWidth(message))/2,35 );
+
+
+            } catch(FontFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        /*
+        graphics.setFont(new Font("Arial", Font.BOLD, 35));
+                FontMetrics metrics = graphics.getFontMetrics();
+                String message = "Score: ";
+                graphics.drawString(message + applesEaten, (SCREEN_WIDTH-metrics.stringWidth(message + applesEaten))/2,35 );
+         */
+
     }
+
     public void newApple(){
         appleX = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE))*UNIT_SIZE;
         appleY = random.nextInt((int)(SCREEN_HEIGHT/UNIT_SIZE))*UNIT_SIZE;
@@ -86,12 +167,15 @@ public class GamePanel extends JPanel implements ActionListener {
                 case 'L':
                     x[0] = x[0] - UNIT_SIZE;
                     break;
-
             }
 
     }
     public void checkApple(){
-
+        if((x[0] == appleX) && (y[0] == appleY)){
+            applesEaten++;
+            bodyParts++;
+            newApple();
+        }
     }
     public void checkCollision(){
         // checks if head collides with body
