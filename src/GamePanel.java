@@ -15,8 +15,15 @@ public class GamePanel extends JPanel implements ActionListener {
     static final int SCREEN_HEIGHT = 600;
     static final int UNIT_SIZE = 25;
     static final int GAME_UNITS = (SCREEN_WIDTH * SCREEN_HEIGHT)/ UNIT_SIZE;
-    static final int DELAY = 75;
+    static final int DELAY = 100;
     final int x[] = new int[GAME_UNITS];
+   public void startPosition(){
+
+       y[0] = 300;
+       for(int i = 1; i< 6; i++){
+           y[i] = y[i-1] ;
+       }
+   }
     final int y[] = new int[GAME_UNITS];
     int bodyParts = 6;
     int applesEaten = 0;
@@ -35,6 +42,7 @@ public class GamePanel extends JPanel implements ActionListener {
         startGame();
     }
     public void startGame(){
+        startPosition();
         newApple();
         running  = true;
         timer  = new Timer(DELAY, this);
@@ -129,7 +137,7 @@ public class GamePanel extends JPanel implements ActionListener {
                 graphics.setFont(new Font("Arial", Font.BOLD, 75));
                 FontMetrics metrics = graphics.getFontMetrics();
                 String message = "Game Over :(";
-                graphics.drawString(message, (SCREEN_WIDTH-metrics.stringWidth(message))/2,35 );
+                graphics.drawString(message, (SCREEN_WIDTH-metrics.stringWidth(message))/2, (SCREEN_HEIGHT)/2 );
 
 
             } catch(FontFormatException e) {
